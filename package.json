@@ -1,6 +1,6 @@
 {
-  "name": "BOTNAME",
-  "version": "1.0.9",
+  "name": "QuoteBot",
+  "version": "1.0.0",
   "description": "DESCRIPTION",
   "main": "index",
   "scripts": {
