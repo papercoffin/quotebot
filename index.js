@@ -15,19 +15,6 @@ app.get('/', (req, res) => res.sendStatus(200))
 app.listen(port, () => console.log('Listening at port ' + port))
 setInterval(() => {http.get("https://quotebot1.herokuapp.com/")}, 280000)
 
-// Retrieves command files.
-
-client.commands = new Discord.Collection();
-const commandFiles = fs.readdirSync('./commands').filter(file => file.endsWith('.js'));
-for (const file of commandFiles) 
-{
-	const command = require(`./commands/${file}`);
-
-	// set a new item in the Collection
-	// with the key as the command name and the value as the exported module
-	client.commands.set(command.name, command);
-}
-
 //Ready
 client.once('ready', () => {console.log('---')})
 
@@ -54,26 +41,6 @@ client.on('message', message =>
             // Sends the resulting embed.
             message.channel.send(quoteEmbed);
         });
-    }
-
-    // Command detector.
-    if (!message.content.startsWith(prefix) || message.author.bot) return;
-
-    const args = message.content.slice(prefix.length).trim().split(/ +/);
-    const command = args.shift().toLowerCase();
-
-    // Checks if there is a command within the commands folder named the given input.
-    if (!client.commands.has(command)) return;
-
-    // If there is, tries to execute it.
-    try 
-    {
-        client.commands.get(command).execute(message, args);
-    } 
-    catch (error) 
-    {
-        console.error(error);
-        message.channel.send('There was an error trying to execute that command!');
     }
 });
 
