@@ -20,10 +20,14 @@ client.once('ready', () => {console.log('---')})
 
 client.on('message', message => 
 {
+
+	const args = message.content.slice(prefix.length).trim().split(/ +/);
+	const command = args.shift().toLowerCase();
+  
   // if/else responses
   
   // pings bot to check for activity
-  if (message.content === `${prefix}ping`) 
+  if (command === 'ping') 
   {
     message.channel.send('Pong!');
   }
