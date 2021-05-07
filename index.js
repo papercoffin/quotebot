@@ -13,59 +13,43 @@ const app = express()
 var port = (process.env.PORT || 0)
 app.get('/', (req, res) => res.sendStatus(200))
 app.listen(port, () => console.log('Listening at port ' + port))
-setInterval(() => {http.get("https://quotebot1.herokuapp.com/")}, 280000)
+setInterval(() => {http.get("SITE_URL")}, 280000)
 
-// Ready.
+//Ready
 client.once('ready', () => {console.log('---')})
 
-// Message Event Listener.
-client.on('message', message => 
-{
-    var embed = Discord.MessageEmbed();
-    const embedColor = "#fff4d4";
+//Message Event Listener
+client.on('message', message => {
 
-    // When a user sends and pastes a link to a Discord message, the bot will display it in an embed.
-    if (message.content.startsWith("https://discord.com/channels/")) 
-    {
-        var parts = message.content.split('/'), quoteEmbed = new Discord.MessageEmbed();
-        message.delete();
-        client.channels.cache.get(parts[5]).messages.fetch(parts[6]).then(nMessage =>
-        {
-            quoteEmbed.setColor(embedColor);
-            quoteEmbed.setAuthor(nMessage.author.tag, nMessage.author.displayAvatarURL({ format: 'png', dynamic: true }));
-            quoteEmbed.setDescription(nMessage.content + '\n[[Jump to Message]](' + message.content + ')');
-            quoteEmbed.setImage((Array.from(nMessage.attachments.values(), x => x.url)[0]));
-            quoteEmbed.setFooter(`ID: ${nMessage.id}`);
-            quoteEmbed.setTimestamp(nMessage.createdAt);
+  try {
 
-            // Sends the resulting embed.
-            message.channel.send(quoteEmbed);
-        });
-    }
+  //Anything past this line will not happen if the message is not sent in a guild (server)
+  if (!message.guild) return;
 
-    // Command detector.
-    if (!message.content.startsWith(prefix) || message.author.bot) return;
+  //Anything past this line will not happen if the message is not sent by an user account.
+  if (message.author.bot || message.system) return;
 
-    const args = message.content.slice(prefix.length).trim().split(' ');
-    const command = args.shift().toLowerCase();
+  //Anything past this line will not happen if the message has no prefix.
+  if (!message.content.toLowerCase().startsWith(prefix)) return;
 
-    // Checks if there is a command within the commands folder named the given input.
-    if (!client.commands.has(command)) return;
+  //Arguments
+  var msgCon = message.content.toLowerCase()
+  var args = message.content.split(' ')
+  var argresult = args.slice(1).join(' ')
 
-    // If there is, tries to execute it.
-    try 
-    {
-        client.commands.get(command).execute(message, args);
-    } 
-    catch (error) 
-    {
-        console.error(error);
-        message.channel.send('There was an error trying to execute that command!');
-    }
-});
+  //Message Attachments
+  if (message.attachments.size) {var msgAtt = Array.from(message.attachments.values(), x => x.url)}
 
-// Token.
-client.login(process.env.TOKEN)
+  //Classic say command
+  if (msgCon.startsWith(prefix + 'say') && (argresult ||  msgAtt)) {
+    message.channel.send(argresult, {files: msgAtt})
+    message.delete()}
+
+  //Evaluate command
+  if (msgCon.startsWith(prefix + 'eval ') && message.author.id === ownerID) {
+    eval(argresult)}
+
+  } catch(error) {console.log('Trigger: ' + message.content + ' | ' + error)}})
 
 //Token
 client.login(process.env.TOKEN)
