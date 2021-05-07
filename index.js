@@ -21,26 +21,32 @@ client.once('ready', () => {console.log('---')})
 //Message Event Listener
 client.on('message', message => 
 {
-    var embed = Discord.MessageEmbed();
-    const embedColor = "#fff4d4";
+  // Ping!
+  if (message.content === `${prefix}ping`) 
+  {
+    message.channel.send('Pong!');
+  }
+  
+  var embed = Discord.MessageEmbed();
+  const embedColor = "#fff4d4";
+  
+  // Quote Mechanic
+  if (message.content.startsWith("https://discord.com/channels/")) 
+  {
+      var parts = message.content.split('/'), quoteEmbed = new Discord.MessageEmbed();
+      message.delete();
+      client.channels.cache.get(parts[5]).messages.fetch(parts[6]).then(nMessage =>
+      {
+          quoteEmbed.setColor(embedColor);
+          quoteEmbed.setAuthor(nMessage.author.tag, nMessage.author.displayAvatarURL({ format: 'png', dynamic: true }));
+          quoteEmbed.setDescription(nMessage.content + '\n[[Jump to Message]](' + message.content + ')');
+          quoteEmbed.setImage((Array.from(nMessage.attachments.values(), x => x.url)[0]));
+          quoteEmbed.setFooter(`ID: ${nMessage.id}`);
+          quoteEmbed.setTimestamp(nMessage.createdAt);
 
-    // When a user sends and pastes a link to a Discord message, the bot will display it in an embed.
-    if (message.content.startsWith("https://discord.com/channels/")) 
-    {
-        var parts = message.content.split('/'), quoteEmbed = new Discord.MessageEmbed();
-        message.delete();
-        client.channels.cache.get(parts[5]).messages.fetch(parts[6]).then(nMessage =>
-        {
-            quoteEmbed.setColor(embedColor);
-            quoteEmbed.setAuthor(nMessage.author.tag, nMessage.author.displayAvatarURL({ format: 'png', dynamic: true }));
-            quoteEmbed.setDescription(nMessage.content + '\n[[Jump to Message]](' + message.content + ')');
-            quoteEmbed.setImage((Array.from(nMessage.attachments.values(), x => x.url)[0]));
-            quoteEmbed.setFooter(`ID: ${nMessage.id}`);
-            quoteEmbed.setTimestamp(nMessage.createdAt);
-
-            // Sends the resulting embed.
-            message.channel.send(quoteEmbed);
-        });
+          // Sends the resulting embed.
+          message.channel.send(quoteEmbed);
+      });
     }
 });
 
