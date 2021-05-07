@@ -1,10 +1,10 @@
 //Variables
 var ownerID = "655475175185448985"
-const prefix = 'q!'
+const { prefix } = require('./config.json');
 
 //Packages
 const Discord = require('discord.js')
-const config = require('./config.json');
+const client = new Discord.Client();
 const http = require('http')
 const express = require('express')
 const app = express()
@@ -21,9 +21,8 @@ client.once('ready', () => {console.log('---')})
 //Message Event Listener
 client.on('message', message => 
 {
-  if (message.content === '!ping') 
+  if (message.content === `${prefix}ping`) 
   {
-		// send back "Pong!" to the channel the message was sent in
 		message.channel.send('Pong!');
   }
 });
