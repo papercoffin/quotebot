@@ -1,11 +1,9 @@
 module.exports = 
 {
 	name: 'ping',
-	description: 'Ping! Check if the bot is online and responsive!',
-    
-    // Parameters passed into the methods being executed.
-    execute(message) 
+	description: 'Ping!',
+	execute(message, args) 
     {
-	    message.channel.send('Pong!');
+		message.channel.send('Pong!');
 	},
 };

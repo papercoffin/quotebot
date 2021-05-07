@@ -3,11 +3,23 @@ var ownerID = "655475175185448985"
 const { prefix } = require('./config.json');
 
 // packages
+const fs = require('fs');
 const Discord = require('discord.js')
 const client = new Discord.Client();
 const http = require('http')
 const express = require('express')
 const app = express()
+
+//command stuff
+client.commands = new Discord.Collection();
+const commandFiles = fs.readdirSync('./commands').filter(file => file.endsWith('.js'));
+for (const file of commandFiles) 
+{
+	const command = require(`./commands/${file}`);
+	// set a new item in the Collection
+	// with the key as the command name and the value as the exported module
+	client.commands.set(command.name, command);
+}
 
 // page
 var port = (process.env.PORT || 0)
@@ -29,7 +41,7 @@ client.on('message', message =>
   // pings bot to check for activity
   if (command === 'ping') 
   {
-    message.channel.send('Pong!');
+    client.commands.get('ping').execute(message, args);
   }
 
   // message quoting
@@ -53,6 +65,19 @@ client.on('message', message =>
       message.channel.send(quoteEmbed);
     });
   }
+
+  if (!client.commands.has(command)) return;
+
+	try 
+  {
+		client.commands.get(command).execute(message, args);
+	} 
+  
+  catch (error) 
+  {
+		console.error(error);
+		message.reply('There was an error trying to execute that command!');
+	}
 
 });
 
